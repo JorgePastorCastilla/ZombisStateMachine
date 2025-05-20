@@ -24,11 +24,14 @@ public class EnemyManager : MonoBehaviour
     public float howMuchEarlierStartAttackAnimation = 1f; // inicialitzarem a 1f
     public float delayBetweenAttacks = 0.6f; // inicialitzarem a 0.6f
 
+    public State gameState;
+
     // Start is called before the first frame update
     void Start()
     {
         health = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player");
+        
     }
 
     // Update is called once per frame
