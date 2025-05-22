@@ -44,13 +44,23 @@ public class WeaponManager : MonoBehaviour
         {
             //Debug.Log("Tocat!");
             // Si no hem ferit a un Zombie, la component EnemyManager valdrà null, però sinò prendrà el valor de la component del Zombie que hem ferit.
+            bool isHeadshot = hit.transform.gameObject.name == "Head";
             EnemyManager enemyManager = hit.transform.GetComponent<EnemyManager>();
             if (enemyManager != null)
             {
                 GameObject particleInstance = Instantiate(BloodParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
                 particleInstance.transform.parent = hit.transform;
                 particleInstance.GetComponent<ParticleSystem>().Play();
-                enemyManager.Hit(damage);
+                if (isHeadshot)
+                {
+                    //CAMBIAR POR COMPORTAMIENTO DE HEADSHOT
+                    enemyManager.Hit(damage);
+                }
+                else
+                {
+                    enemyManager.Hit(damage);
+                }
+                
             }
         }
 

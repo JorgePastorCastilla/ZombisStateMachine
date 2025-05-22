@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -30,22 +32,24 @@ public class State
     protected Transform player;
     protected State nextState;
     protected NavMeshAgent agent;
+    protected EnemyManager zombiManager;
 
-    private float visionDistance = 10.0f;
-    private float visionAngle = 30f;
+    private float visionDistance = 50.0f;
+    private float visionAngle = 45f;
     private float attackDistance = 7.0f;
 
-    public State(GameObject _zombi, Animator _animator, Transform _player, NavMeshAgent _agent)
+    public State(GameObject _zombi, Animator _animator, Transform _player, NavMeshAgent _agent, EnemyManager _zombiManager)
     {
         zombi = _zombi;
         animator = _animator;
         player = _player;
         agent = _agent;
+        zombiManager = _zombiManager;
     }
 
     public virtual void Enter()
     {
-        stage = EVENT.ENTER;
+        stage = EVENT.UPDATE;
     }
 
     public virtual void Update()
@@ -75,6 +79,31 @@ public class State
             return nextState;
         }
         return this;
+    }
+
+    public bool CanSeePlayer()
+    {
+        Vector3 direction = player.position - zombi.transform.position;
+        float angle = Vector3.Angle(direction, zombi.transform.forward);
+
+        return (direction.magnitude < visionDistance && angle < visionAngle);
+    }
+
+    public bool CanAttackPlayer()
+    {
+        bool isNotOnCooldown = (zombiManager.lastAttackTime.Equals(null) || Math.Abs(zombiManager.lastAttackTime - Time.time) > zombiManager.delayBetweenAttacks);
+        return (/*CanSeePlayer() && */zombiManager.playerInReach && isNotOnCooldown );
+    }
+
+    public void ChangeState(State _newState)
+    {
+        nextState = _newState;
+        stage = EVENT.EXIT;
+    }
+
+    public bool IsLowHealth()
+    {
+        return ( zombiManager.health <= (zombiManager.maxHealth * 0.3f) ) && !zombiManager.alreadyFakedDead;
     }
     
 }

@@ -22,32 +22,38 @@ public class EnemyManager : MonoBehaviour
     public bool playerInReach = false;
     public float attackDelayTimer = 0f;
     public float howMuchEarlierStartAttackAnimation = 1f; // inicialitzarem a 1f
-    public float delayBetweenAttacks = 0.6f; // inicialitzarem a 0.6f
-
+    public float delayBetweenAttacks = 1.6f; // inicialitzarem a 0.6f
+    public float lastAttackTime;
+    public bool alreadyFakedDead = false;
     public State gameState;
+
+    
 
     // Start is called before the first frame update
     void Start()
     {
         health = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player");
-        
+        gameState = new IdleState(this.gameObject, enemyAnimator, player.transform, transform.GetComponent<NavMeshAgent>(), this);
+        lastAttackTime = Time.time;
     }
 
     // Update is called once per frame
     void Update()
     {
-        GetComponent<NavMeshAgent>().destination = player.transform.position;
-
-        // En primer lloc hem d'accedir a la velocitat del Zombiem, des del component NavMeshAgent
-        if (GetComponent<NavMeshAgent>().velocity.magnitude > 1)
-        {
-            enemyAnimator.SetBool("isRunning", true);
-        }
-        else
-        {
-            enemyAnimator.SetBool("isRunning", false);
-        }
+        gameState = gameState.Process();
+        
+        // GetComponent<NavMeshAgent>().destination = player.transform.position;
+        //
+        // // En primer lloc hem d'accedir a la velocitat del Zombiem, des del component NavMeshAgent
+        // if (GetComponent<NavMeshAgent>().velocity.magnitude > 1)
+        // {
+        //     enemyAnimator.SetBool("isRunning", true);
+        // }
+        // else
+        // {
+        //     enemyAnimator.SetBool("isRunning", false);
+        // }
 
     }
     
@@ -61,7 +67,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    private void OnCollisionStay(Collision other)
+    /*private void OnCollisionStay(Collision other)
     {
         if (playerInReach)
         {
@@ -77,7 +83,7 @@ public class EnemyManager : MonoBehaviour
                 attackDelayTimer = 0;
             }
         }
-    }
+    }*/
 
     private void OnCollisionExit(Collision other)
     {
@@ -101,7 +107,8 @@ public class EnemyManager : MonoBehaviour
             gameManager.enemiesAlive--;
             // Destroy(gameObject);
             enemyAnimator.SetTrigger("isDead");
-            Destroy(gameObject,10f);
+            enemyAnimator.SetBool("isRunning", false);
+            Destroy(gameObject,30f);
             Destroy(GetComponent<NavMeshAgent>());
             Destroy(GetComponent<EnemyManager>());
             // Destroy(GetComponent<CapsuleCollider>());

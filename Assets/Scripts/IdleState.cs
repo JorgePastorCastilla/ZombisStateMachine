@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class IdleState : State
 {
-    public IdleState(GameObject _zombi, Animator _animator, Transform _player, NavMeshAgent _agent) : base(_zombi, _animator, _player, _agent)
+    public IdleState(GameObject _zombi, Animator _animator, Transform _player, NavMeshAgent _agent, EnemyManager _zombiManager) : base(_zombi, _animator, _player, _agent, _zombiManager)
     {
         name = STATE.IDLE;
     }
@@ -19,7 +19,19 @@ public class IdleState : State
     public override void Update()
     {
         //LOGICA PARA LOS DIFERENTES CAMBIOS DE ESTADO
-        
+        if ( IsLowHealth() )
+        {
+            nextState = new FakeDeadState(zombi,animator, player, agent, zombiManager);
+            stage = EVENT.EXIT;
+        }else if (CanAttackPlayer())
+        {
+            nextState = new AttackState(zombi,animator, player, agent, zombiManager);
+            stage = EVENT.EXIT;
+        }else if (CanSeePlayer())
+        {
+            nextState = new ChaseState(zombi,animator, player, agent, zombiManager);
+            stage = EVENT.EXIT;
+        }
     }
 
     public override void Exit()
