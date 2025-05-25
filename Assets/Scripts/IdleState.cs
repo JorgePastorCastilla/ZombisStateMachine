@@ -19,9 +19,10 @@ public class IdleState : State
     public override void Update()
     {
         //LOGICA PARA LOS DIFERENTES CAMBIOS DE ESTADO
-        if ( IsLowHealth() )
+        if ( IsLowHealth())
         {
-            nextState = new FakeDeadState(zombi,animator, player, agent, zombiManager);
+            // nextState = new FakeDeadState(zombi,animator, player, agent, zombiManager);
+            nextState = lowHealthState();
             stage = EVENT.EXIT;
         }else if (CanAttackPlayer())
         {

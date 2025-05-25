@@ -19,9 +19,10 @@ public class ChaseState : State
     public override void Update()
     {
         agent.destination = player.position;
-        if ( IsLowHealth() )
+        if ( IsLowHealth())
         {
-            nextState = new FakeDeadState(zombi,animator, player, agent, zombiManager);
+            // nextState = new FakeDeadState(zombi,animator, player, agent, zombiManager);
+            nextState = lowHealthState();
             stage = EVENT.EXIT;
         }else if ( CanAttackPlayer() )
         {

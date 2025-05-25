@@ -21,9 +21,10 @@ public class AttackState : State
         player.GetComponent<PlayerManager>().Hit(zombiManager.damage);
         zombiManager.lastAttackTime = Time.time;
 
-        if ( IsLowHealth() )
+        if ( IsLowHealth())
         {
-            nextState = new FakeDeadState(zombi,animator, player, agent, zombiManager);
+            // nextState = new FakeDeadState(zombi,animator, player, agent, zombiManager);
+            nextState = lowHealthState();
             stage = EVENT.EXIT;
         }else if (CanSeePlayer())
         {

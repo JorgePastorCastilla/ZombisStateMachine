@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class State
 {
@@ -14,6 +15,7 @@ public class State
         ATTACK,
         DEAD,
         FAKE_DEAD,
+        CHASE_CORPSE,
         EAT_CORPSE,
         DEAMBULAR
     };
@@ -35,7 +37,7 @@ public class State
     protected EnemyManager zombiManager;
 
     private float visionDistance = 50.0f;
-    private float visionAngle = 45f;
+    private float visionAngle = 60f;
     private float attackDistance = 7.0f;
 
     public State(GameObject _zombi, Animator _animator, Transform _player, NavMeshAgent _agent, EnemyManager _zombiManager)
@@ -104,6 +106,28 @@ public class State
     public bool IsLowHealth()
     {
         return ( zombiManager.health <= (zombiManager.maxHealth * 0.3f) ) && !zombiManager.alreadyFakedDead;
+    }
+
+    public State lowHealthState()
+    {
+        State newState;
+        if (zombiManager.zombiWillFakeDead)
+        {
+            if (zombiManager.alreadyFakedDead)
+            {
+                newState = zombiManager.gameState;
+            }
+            else
+            {
+                newState = new FakeDeadState(zombi, animator, player, agent, zombiManager);
+            }
+        }
+        else
+        {
+            newState = new ChaseCorpseState(zombi, animator, player, agent, zombiManager);
+        }
+
+        return newState;
     }
     
 }

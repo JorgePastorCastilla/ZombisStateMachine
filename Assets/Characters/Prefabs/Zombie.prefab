@@ -1448,7 +1448,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6889446250198048191
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1912,7 +1912,7 @@ GameObject:
   - component: {fileID: 5205456087509766976}
   m_Layer: 0
   m_Name: Zombie
-  m_TagString: Untagged
+  m_TagString: zombi
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2026,6 +2026,8 @@ MonoBehaviour:
   howMuchEarlierStartAttackAnimation: 1
   delayBetweenAttacks: 1.6
   lastAttackTime: 0
+  alreadyFakedDead: 0
+  zombiWillFakeDead: 0
 --- !u!82 &5205456087509766976
 AudioSource:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class WeaponManager : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class WeaponManager : MonoBehaviour
         {
             //Debug.Log("Tocat!");
             // Si no hem ferit a un Zombie, la component EnemyManager valdrà null, però sinò prendrà el valor de la component del Zombie que hem ferit.
-            bool isHeadshot = hit.transform.gameObject.name == "Head";
+            bool isHeadshot = hit.collider.gameObject.name == "Head";
             EnemyManager enemyManager = hit.transform.GetComponent<EnemyManager>();
             if (enemyManager != null)
             {
@@ -55,6 +56,11 @@ public class WeaponManager : MonoBehaviour
                 {
                     //CAMBIAR POR COMPORTAMIENTO DE HEADSHOT
                     enemyManager.Hit(damage);
+                    if (enemyManager.health > 0)
+                    {
+                        DeambularState newState = new DeambularState(enemyManager.gameObject, enemyManager.enemyAnimator, playerAnimator.gameObject.transform, enemyManager.gameObject.GetComponent<NavMeshAgent>(), enemyManager);
+                        enemyManager.gameState.ChangeState(newState);
+                    }
                 }
                 else
                 {

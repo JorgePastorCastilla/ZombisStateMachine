@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class EnemyManager : MonoBehaviour
     public bool alreadyFakedDead = false;
     public State gameState;
 
+    public bool zombiWillFakeDead = false;
     
 
     // Start is called before the first frame update
@@ -36,25 +38,14 @@ public class EnemyManager : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         gameState = new IdleState(this.gameObject, enemyAnimator, player.transform, transform.GetComponent<NavMeshAgent>(), this);
         lastAttackTime = Time.time;
+        float randomNumber = Random.Range(0f, 1f);
+        zombiWillFakeDead = randomNumber <= 0.2f;
     }
 
     // Update is called once per frame
     void Update()
     {
         gameState = gameState.Process();
-        
-        // GetComponent<NavMeshAgent>().destination = player.transform.position;
-        //
-        // // En primer lloc hem d'accedir a la velocitat del Zombiem, des del component NavMeshAgent
-        // if (GetComponent<NavMeshAgent>().velocity.magnitude > 1)
-        // {
-        //     enemyAnimator.SetBool("isRunning", true);
-        // }
-        // else
-        // {
-        //     enemyAnimator.SetBool("isRunning", false);
-        // }
-
     }
     
     // Detectar la col·lisió
@@ -63,7 +54,14 @@ public class EnemyManager : MonoBehaviour
         if(collision.gameObject == player)
         {
             playerInReach = true;
-            // player.GetComponent<PlayerManager>().Hit(damage);
+        }else if (collision.gameObject.tag == "zombi" && health <= 0)
+        {
+            EnemyManager zombi = collision.gameObject.GetComponent<EnemyManager>();
+            if (zombi.gameState.name == State.STATE.CHASE_CORPSE)
+            {
+                EatCorpseState newState = new EatCorpseState(zombi.gameObject, zombi.enemyAnimator, zombi.player.transform, zombi.gameObject.GetComponent<NavMeshAgent>(), zombi, this.gameObject);
+                zombi.gameState.ChangeState(newState); 
+            }
         }
     }
 
